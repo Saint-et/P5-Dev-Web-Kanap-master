@@ -25,7 +25,8 @@ const product = window.location.search.split("?").join("");
 
         document.getElementById("title").innerText = `${productData.name}`;
 
-        let quantity = document.getElementById("quantity")
+        let quantity = document.getElementById("quantity");
+        quantity.value = "1";
 
         quantity.addEventListener("click", () => {
             let maxPrice = `${productData.price}` * quantity.value;
@@ -86,7 +87,7 @@ const product = window.location.search.split("?").join("");
             
             /*_____________________validation du produit_________________________*/
 
-            if(selectQuantity.value > 0 && selectColors.value != 0 && selectQuantity.value < 101){
+            if(selectQuantity.value > 0 && selectColors.value != 0 && selectQuantity.value <= 100){
                 console.log("produit valide")
             
             /*_____________________creation du produit dans le localstorage_________________________*/
@@ -95,7 +96,7 @@ const product = window.location.search.split("?").join("");
                 productBoard = []
                 productBoard.push(productparam)
                 localStorage.setItem("product", JSON.stringify(productBoard));
-                let alert = confirm(`🤭" ${selectQuantity.value} ${productData.name} ${selectColors.value} " a été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
+                let alert = confirm(`🤭 ${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
                 if (alert == true) {
                     window.location = "./cart.html";
                 }
@@ -111,7 +112,7 @@ const product = window.location.search.split("?").join("");
                             productBoard[i].quantity= 0 + parseInt(selectQuantity.value, 10),
                             localStorage.setItem("product", JSON.stringify(productBoard)),
                             productBoard = JSON.parse(localStorage.getItem("product")),
-                            alert(`🙂la quantité de " ${productData.name} , ${selectColors.value} " a été changer par " ${selectQuantity.value} "🙃`),
+                            alert(`🙂la quantité de ${productData.name} (${selectColors.value}) a été changer par " ${selectQuantity.value} "🙃`),
                             console.log("change-quantity")
                         ) 
                     }    
@@ -123,7 +124,7 @@ const product = window.location.search.split("?").join("");
                         productBoard.push(productparam),
                         localStorage.setItem("product", JSON.stringify(productBoard)),
                         productBoard = JSON.parse(localStorage.getItem("product")),
-                        alert(`Cool!😀" ${selectQuantity.value} ${productData.name} ${selectColors.value} " a été ajouter au panier 😁.`),
+                        alert(`😀 ${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier 😁.`),
                         console.log("new-article")
                         )
                     }

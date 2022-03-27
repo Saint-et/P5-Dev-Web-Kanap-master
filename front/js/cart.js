@@ -137,14 +137,13 @@ async function panierDisplay() {
             let selectQuantity = document.getElementsByClassName("itemQuantity")[i];
             //console.log(selectQuantity.value);
             
-            if (selectQuantity.value != productBoard[i].quantity && selectQuantity.value < 101 && selectQuantity.value > 0) {
+            if (selectQuantity.value != productBoard[i].quantity && selectQuantity.value <= 100 && selectQuantity.value > 0) {
             productBoard[i].quantity= 0 + parseInt(selectQuantity.value, 10);
             localStorage.setItem("product", JSON.stringify(productBoard));
             //console.log("Quantity change");
             }
             else{
-                //alert("Aïe! aïe! aïe!🤯 Veillez mettre une quantité entre (1 - 100) 🤕")
-                setTimeout(function() { alert("Aïe! aïe! aïe!🤯 Veillez mettre une quantité entre (1 - 100) 🤕"); }, 3);
+                alert("Aïe! aïe! aïe!🤯 Veillez mettre une quantité entre (1 - 100) 🤕")
                 location.reload()
             }
         }
@@ -230,7 +229,7 @@ async function panierDisplay() {
                         firstNameErrorMsg.innerText = "" ;  
                     }
                     else if (myRegex.test(inputfirstName.value) == true) {
-                        firstNameErrorMsg.innerText = "😏, le Prénom est correcte" ;
+                        firstNameErrorMsg.innerText = "Le Prénom est correcte" ;
                         firstNameErrorMsg.style.color = "#dbffe5";
                     }
                     else if (myRegex.test(inputfirstName.value) == false) {
@@ -251,7 +250,7 @@ async function panierDisplay() {
                         lastNameErrorMsg.innerText = "" ;  
                     }
                     else if(myRegex.test(inputlastName.value) == true) {
-                        lastNameErrorMsg.innerText = "🙂, le Nom est correcte" ;
+                        lastNameErrorMsg.innerText = "Le Nom est correcte" ;
                         lastNameErrorMsg.style.color = "#dbffe5";
                     }
                     else if(myRegex.test(inputlastName.value) == false) {
@@ -272,7 +271,7 @@ async function panierDisplay() {
                         addressErrorMsg.innerText = "" ;
                     }
                     else if(myRegex.test(inputaddress.value) == true) {
-                        addressErrorMsg.innerText = "🙃, l'adresse est correcte" ;
+                        addressErrorMsg.innerText = "L'adresse est correcte" ;
                         addressErrorMsg.style.color = "#dbffe5";
                     }
                     else if(myRegex.test(inputaddress.value) == false) {
@@ -293,7 +292,7 @@ async function panierDisplay() {
                         cityErrorMsg.innerText = "" ;
                     }
                     else if(myRegex.test(inputcity.value) == true) {
-                        cityErrorMsg.innerText = "😊, la Ville est correcte" ;
+                        cityErrorMsg.innerText = "La Ville est correcte" ;
                         cityErrorMsg.style.color = "#dbffe5";
                     }
                     else if(myRegex.test(inputcity.value) == false) {
@@ -314,7 +313,7 @@ async function panierDisplay() {
                         emailErrorMsg.innerText = "" ;
                     }
                     else if(myRegexEmail.test(inputemail.value) == true) {
-                        emailErrorMsg.innerText = "😎, l'Email est correcte" ;
+                        emailErrorMsg.innerText = "L'Email est correcte" ;
                         emailErrorMsg.style.color = "#dbffe5";
                     }
                     else if(myRegexEmail.test(inputemail.value) == false) {
