@@ -66,10 +66,10 @@ const product = window.location.search.split("?").join("");
          
        async function addbasket(productData) {
         //console.log(productData);
-        let bouton = document.getElementById(productData._id);
+        let boutonAdd = document.getElementById(productData._id);
         //console.log(bouton);
 
-        bouton.addEventListener("click", () => {
+        boutonAdd.addEventListener("click", () => {
             let productBoard = JSON.parse(localStorage.getItem("product"))
             let selectColors = document.getElementById("colors")
             let selectQuantity = document.getElementById("quantity")
@@ -82,7 +82,7 @@ const product = window.location.search.split("?").join("");
             const productparam = Object.assign({}, productData, {
                 color: `${selectColors.value}`,
                 quantity: `${selectQuantity.value}`,
-                Product_Delete: `Delete_${productData._id}_and_${selectColors.value}`
+                Product_Delete: `Delete_${productData._id}_and_${selectColors.value}`,
             });
             
             /*_____________________validation du produit_________________________*/
@@ -96,7 +96,7 @@ const product = window.location.search.split("?").join("");
                 productBoard = []
                 productBoard.push(productparam)
                 localStorage.setItem("product", JSON.stringify(productBoard));
-                let alert = confirm(`🤭 ${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
+                let alert = confirm(`${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
                 if (alert == true) {
                     window.location = "./cart.html";
                 }
@@ -112,7 +112,7 @@ const product = window.location.search.split("?").join("");
                             productBoard[i].quantity= 0 + parseInt(selectQuantity.value, 10),
                             localStorage.setItem("product", JSON.stringify(productBoard)),
                             productBoard = JSON.parse(localStorage.getItem("product")),
-                            alert(`🙂la quantité de ${productData.name} (${selectColors.value}) a été changer par " ${selectQuantity.value} "🙃`),
+                            alert(`la quantité de ${productData.name} (${selectColors.value}) a été changer par ${selectQuantity.value} 🙂.`),
                             console.log("change-quantity")
                         ) 
                     }    
@@ -124,7 +124,7 @@ const product = window.location.search.split("?").join("");
                         productBoard.push(productparam),
                         localStorage.setItem("product", JSON.stringify(productBoard)),
                         productBoard = JSON.parse(localStorage.getItem("product")),
-                        alert(`😀 ${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier 😁.`),
+                        alert(`${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier 🙂.`),
                         console.log("new-article")
                         )
                     }
