@@ -3,20 +3,41 @@
 let productBoard = JSON.parse(localStorage.getItem("product"));
 //console.log(productBoard)
 
-/*///////////////////////////////  creation d'élément dans le HTML si le panier contient des éléments  ///////////////////////////////*/
+panierDisplay();
+form();
+sendProductForm()
 
+/*///////////////////////////////  creation d'élément dans le HTML si le panier contient des éléments  ///////////////////////////////*/
+let productId = []
+//console.log(productId)
+
+
+            
 async function panierDisplay() {
+
+    
 
     if(productBoard){   
        let products = await productBoard;
-       //console.log(products);
+       //console.table(products);
 
        products.forEach((product) => {
-            //console.log(product);
+            //console.table(product._id);
+
+/*///////////////////////////////////////  appel de l'API pour la creation d'element dans le HTML  //////////////////////////////////////////*/
+
+            fetch(`http://localhost:3000/api/products/${product._id}`)
+            .then(response => response.json())
+            .then(data => {
+            //console.log(data);
+            
+
+            productId.push(product._id)
 
             const cartItems = document.getElementById("cart__items");
 
             const article = document.createElement("article");
+            article.id = `Article_${product._id}_and_${product.color}`;
             article.className = "cart__item";
             article.dataset.id = `${product._id}`;
             article.dataset.color = `${product.color}`;
@@ -25,6 +46,12 @@ async function panierDisplay() {
             const cartItemImg = document.createElement("div");
             cartItemImg.className = "cart__item__img";
             article.appendChild(cartItemImg);
+
+            const img = new Image ;
+                img.className = "imgKanap"
+                img.src = `${data.imageUrl}`;
+                img.alt = `${data.altTxt}`;
+                cartItemImg.appendChild(img);
           
             const cartItemContent = document.createElement("div");
             cartItemContent.className = "cart__item__content";
@@ -34,9 +61,17 @@ async function panierDisplay() {
             cartItemContentDescription.className = "cart__item__content__description";
             cartItemContent.appendChild(cartItemContentDescription);
 
+            const h2 = document.createElement("h2");
+            h2.innerText = `Nom : ${data.name}`;
+            cartItemContentDescription.appendChild(h2);
+
             const p = document.createElement("p");
             p.innerText = `Couleur : ${product.color}`;
             cartItemContentDescription.appendChild(p);
+
+            const price = document.createElement("p");
+            price.className = "price";
+            cartItemContentDescription.appendChild(price);
 
             const cartItemContentSettings = document.createElement("div");
             cartItemContentSettings.className = "cart__item__content__settings";
@@ -68,37 +103,18 @@ async function panierDisplay() {
             deletekanap.className = "deleteItem";
             deletekanap.innerText = "Supprimer";
             deletekanap.id = `Delete_${product._id}_and_${product.color}`;
-            cartItemContentSettingsDelete.appendChild(deletekanap);
-
-/*///////////////////////////////////////  appel de l'API pour la creation d'element dans le HTML  //////////////////////////////////////////*/
-
-            get_API(product)
-
-            async function get_API(product) {
-                await fetch(`http://localhost:3000/api/products/${product._id}`)
-                .then(response => response.json())
-                .then(data => {
-
-                const img = new Image ;
-                img.src = `${data.imageUrl}`;
-                img.alt = `${data.altTxt}`;
-                cartItemImg.appendChild(img);
-            
-                const h2 = document.createElement("h2");
-                h2.innerText = `Nom : ${data.name}`;
-                cartItemContentDescription.appendChild(h2);
-            
-                const price = document.createElement("p");
-                price.className = "price";
-                cartItemContentDescription.appendChild(price);
-                //console.log(data)
-    
+            cartItemContentSettingsDelete.appendChild(deletekanap);          
+                
 /*///////////////////////////////////////////  calcul du prix total des produits  //////////////////////////////////////////////////*/
 
-               function caculTotalPrice() {
-                let maxPrice = `${data.price}` * `${product.quantity}`;
+             
+            function caculTotalPrice() {
+
+                let inputQuantity = document.getElementById(`Quantity_${product._id}_and_${product.color}`);
+
+                let maxPrice = `${data.price}` * `${inputQuantity.value}`;
                 price.innerText = `${maxPrice} €`;
-    
+            
                 let arr = document.querySelectorAll(".price");
                                     
                 let total = 0;
@@ -110,16 +126,15 @@ async function panierDisplay() {
                 let totalQuantity = document.getElementById("totalPrice");
                 totalQuantity.innerText = total;
                 //console.log(total)
-               }
 
+               }
+            
                let boutonsQuantityp = document.querySelectorAll(".itemQuantity");
                 
                 boutonsQuantityp.forEach((boutonQuantityp) => {boutonQuantityp.addEventListener("change", function () {
-                    return caculTotalPrice()
+                caculTotalPrice()
             })})
-                   caculTotalPrice()
-            })
-            };
+                caculTotalPrice()
 
 /*//////////////////////////////////////  changement de la quantité dans localstorage  ////////////////////////////////////////*/ 
 
@@ -141,7 +156,7 @@ async function panierDisplay() {
             else{
                 alert("Aïe! aïe! aïe!🤯 Veillez mettre une quantité entre (1 - 100) 🤕")
                 location.reload()
-                console.log("Quantity change err")
+                console.log("Quantity non valide")
             }
         }
             })
@@ -165,7 +180,7 @@ async function panierDisplay() {
             let boutonsQuantityTotal = document.querySelectorAll(".itemQuantity");   
 
             boutonsQuantityTotal.forEach((boutonQuantityTotal) => {boutonQuantityTotal.addEventListener("change", function () {
-               return calculQuantityTotale()
+               calculQuantityTotale()
             })
         })
                calculQuantityTotale()
@@ -189,178 +204,10 @@ async function panierDisplay() {
 
                 productBoard = productBoard.filter(el => el.Product_Delete !== product.Product_Delete);
                 localStorage.setItem("product", JSON.stringify(productBoard));
-                location.reload();
-            }
-            })
-
-/*//////////////////////////////////////////  Vérification du formulaire  /////////////////////////////////////////////////////*/
-
-                let forms = document.querySelector(".cart__order__form")
-
-                forms.addEventListener("click", function () {
-            
-                let myRegex = /^[a-zA-Z-\sùéèàç_]+$/;
-                let myRegexEmail = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-            
-                /*________________Vérification du firstName________________*/
-            
-                let inputfirstName = document.getElementById("firstName")
-            
-                inputfirstName.addEventListener("input", function () {
-                    
-                let firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
-            
-                    if(inputfirstName.value == "" ) {
-                        firstNameErrorMsg.innerText = "" ;  
-                    }
-                    else if (myRegex.test(inputfirstName.value) == true) {
-                        firstNameErrorMsg.innerText = "Le Prénom est correcte" ;
-                        firstNameErrorMsg.style.color = "#dbffe5";
-                    }
-                    else if (myRegex.test(inputfirstName.value) == false) {
-                        firstNameErrorMsg.innerText = "😓 Le prénom doit comporter des lettres, des tirets uniquements." ;
-                        firstNameErrorMsg.style.color = "#fbbcbc";
-                    }
-                })
-
-                /*__________________Vérification du lastName__________________*/
-            
-                let inputlastName = document.getElementById("lastName");
-            
-                inputlastName.addEventListener("input", function () {
-                    
-                let lastNameErrorMsg = document.getElementById("lastNameErrorMsg")
-            
-                    if(inputlastName.value == "" ) {
-                        lastNameErrorMsg.innerText = "" ;  
-                    }
-                    else if(myRegex.test(inputlastName.value) == true) {
-                        lastNameErrorMsg.innerText = "Le Nom est correcte" ;
-                        lastNameErrorMsg.style.color = "#dbffe5";
-                    }
-                    else if(myRegex.test(inputlastName.value) == false) {
-                        lastNameErrorMsg.innerText = "😖 Le nom doit comporter des lettres, des tirets uniquements." ;
-                        lastNameErrorMsg.style.color = "#fbbcbc";
-                    }
-                })
-            
-                /*___________________Vérification d'address_____________________*/
-            
-                let inputaddress = document.getElementById("address");
-                    
-                inputaddress.addEventListener("input", function () {
-            
-                let addressErrorMsg = document.getElementById("addressErrorMsg")
-            
-                    if(inputaddress.value == "" ) {
-                        addressErrorMsg.innerText = "" ;
-                    }
-                    else if(myRegex.test(inputaddress.value) == true) {
-                        addressErrorMsg.innerText = "L'adresse est correcte" ;
-                        addressErrorMsg.style.color = "#dbffe5";
-                    }
-                    else if(myRegex.test(inputaddress.value) == false) {
-                        addressErrorMsg.innerText = "🙄 L'Adresse doit comporter des lettres, des tirets uniquements." ;
-                        addressErrorMsg.style.color = "#fbbcbc";
-                    }
-                })
-            
-                /*__________________Vérification de la ville__________________*/
-            
-                let inputcity = document.getElementById("city");
-            
-                inputcity.addEventListener("input", function () {
-            
-                let cityErrorMsg = document.getElementById("cityErrorMsg")
-            
-                    if(inputcity.value == "") {
-                        cityErrorMsg.innerText = "" ;
-                    }
-                    else if(myRegex.test(inputcity.value) == true) {
-                        cityErrorMsg.innerText = "La Ville est correcte" ;
-                        cityErrorMsg.style.color = "#dbffe5";
-                    }
-                    else if(myRegex.test(inputcity.value) == false) {
-                        cityErrorMsg.innerText = "🤔 La Ville doit comporter des lettres, des tirets uniquements." ;
-                        cityErrorMsg.style.color = "#fbbcbc";
-                    }
-                })
-            
-                 /*___________________Vérification de l'email___________________*/
-            
-                let inputemail = document.getElementById("email");
-                    
-                inputemail.addEventListener("input", function () {
-            
-                let emailErrorMsg = document.getElementById("emailErrorMsg")
-            
-                    if(inputemail.value == "" ){
-                        emailErrorMsg.innerText = "" ;
-                    }
-                    else if(myRegexEmail.test(inputemail.value) == true) {
-                        emailErrorMsg.innerText = "L'Email est correcte" ;
-                        emailErrorMsg.style.color = "#dbffe5";
-                    }
-                    else if(myRegexEmail.test(inputemail.value) == false) {
-                        emailErrorMsg.innerText = "😕 Veuiller saisir un Email valide Exemple:  utilisateur4534@gmail.com" ;
-                        emailErrorMsg.style.color = "#fbbcbc";
-                    }
-                })
-            
-
-            /*_________________Validation du formulaire_________________*/
-
-            let boutonorder = document.getElementById("order")
-
-            boutonorder.addEventListener(("click"), function (e) {
-            e.preventDefault();
-
-                if(myRegex.test(inputfirstName.value) &&
-                myRegex.test(inputlastName.value) &&
-                myRegex.test(inputaddress.value) &&
-                 myRegex.test(inputcity.value) &&
-                myRegexEmail.test(inputemail.value) == true) {
-                    
-/*///////////////////////////////////////////  Creation Contact et products  /////////////////////////////////////////////////*/
-
-            let productId = []
-            productId.push(product._id)
-            
-            const order = {
-                contact: {
-                    firstName: inputfirstName.value,
-                    lastName: inputlastName.value,
-                    address: inputaddress.value,
-                    city: inputcity.value,
-                    email: inputemail.value,
-                    },
-                    products: productId,
-            };
-            console.log(order);
-            const options = {
-                method: "POST",
-                body: JSON.stringify(order),
-                headers: {
-                    "Content-Type": "application/json"
-                },
-            };
-            
-            //console.table(options)
-            
-                fetch("http://localhost:3000/api/products/order", options)
-                .then((response) => response.json())
-                .then((data) => {
-                    //console.log(data);
-                    localStorage.clear();
-                           
-                    document.location.href = `confirmation.html?id=${data.orderId}`
-                })
-                }  
-              })
-            })
-            });
+                location.reload()
+            }})
+            })})
         }
-
      
 /*////////////////////////////////////  creation d'element dans le HTML si panier vide ///////////////////////////////////////////////*/
 
@@ -381,7 +228,226 @@ async function panierDisplay() {
             const h2 = document.createElement("h2");
             h2.innerText = "😅 Ajouter des articles à votre panier.";
             cartItemContentDescription.appendChild(h2);
+
+            let defaulttotalPrice = document.getElementById("totalPrice")
+            defaulttotalPrice.innerText = "0";
+
+            let defaulttotalQuantity = document.getElementById("totalQuantity")
+            defaulttotalQuantity.innerText = "0";
     }
 }
 
-panierDisplay();
+/*//////////////////////////////////////////  Vérification du formulaire  /////////////////////////////////////////////////////*/
+
+                async function form() {
+    
+                let forms = document.querySelector(".cart__order__form")
+
+                forms.addEventListener("click", function () {
+            
+                let myRegex = /^[a-zA-Z-\sùéèàç_]+$/;
+                let myRegexEmail = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            
+                let inputfirstName = document.getElementById("firstName");
+                let inputlastName = document.getElementById("lastName");
+                let inputaddress = document.getElementById("address");
+                let inputcity = document.getElementById("city");
+                let inputemail = document.getElementById("email");
+
+                if (productBoard != null) {
+
+                /*________________Vérification du firstName________________*/
+
+                inputfirstName.addEventListener("input", function () {
+                    
+                let firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
+            
+                    if(inputfirstName.value == "" ) {
+                        firstNameErrorMsg.innerText = "" ;  
+                    }
+                    else if (myRegex.test(inputfirstName.value) == true) {
+                        firstNameErrorMsg.innerText = "Le Prénom est correcte" ;
+                        firstNameErrorMsg.style.color = "#dbffe5";
+                        true
+                    }
+                    else if (myRegex.test(inputfirstName.value) == false) {
+                        firstNameErrorMsg.innerText = "😓 Le prénom doit comporter des lettres, des tirets uniquements." ;
+                        firstNameErrorMsg.style.color = "#fbbcbc";
+                    }
+                })
+
+                /*__________________Vérification du lastName__________________*/
+            
+                inputlastName.addEventListener("input", function () {
+                  
+                let lastNameErrorMsg = document.getElementById("lastNameErrorMsg")
+            
+                    if(inputlastName.value == "" ) {
+                        lastNameErrorMsg.innerText = "" ;  
+                    }
+                    else if(myRegex.test(inputlastName.value) == true) {
+                        lastNameErrorMsg.innerText = "Le Nom est correcte" ;
+                        lastNameErrorMsg.style.color = "#dbffe5";
+                        true
+                    }
+                    else if(myRegex.test(inputlastName.value) == false) {
+                        lastNameErrorMsg.innerText = "😖 Le nom doit comporter des lettres, des tirets uniquements." ;
+                        lastNameErrorMsg.style.color = "#fbbcbc";
+                    }
+                })
+            
+                /*___________________Vérification d'address_____________________*/
+                    
+                inputaddress.addEventListener("input", function () {
+                
+                let addressErrorMsg = document.getElementById("addressErrorMsg")
+            
+                    if(inputaddress.value == "" ) {
+                        addressErrorMsg.innerText = "" ;
+                    }
+                    else if(myRegex.test(inputaddress.value) == true) {
+                        addressErrorMsg.innerText = "L'adresse est correcte" ;
+                        addressErrorMsg.style.color = "#dbffe5";
+                        true
+                    }
+                    else if(myRegex.test(inputaddress.value) == false) {
+                        addressErrorMsg.innerText = "🙄 L'Adresse doit comporter des lettres, des tirets uniquements." ;
+                        addressErrorMsg.style.color = "#fbbcbc";
+                    }
+                })
+            
+                /*__________________Vérification de la ville__________________*/
+            
+                inputcity.addEventListener("input", function () {
+                
+                let cityErrorMsg = document.getElementById("cityErrorMsg")
+            
+                    if (inputcity.value == "") {
+                        cityErrorMsg.innerText = "" ;
+                    }
+                    else if (myRegex.test(inputcity.value) == true) {
+                        cityErrorMsg.innerText = "La Ville est correcte" ;
+                        cityErrorMsg.style.color = "#dbffe5";
+                        true
+                    }
+                    else if (myRegex.test(inputcity.value) == false) {
+                        cityErrorMsg.innerText = "🤔 La Ville doit comporter des lettres, des tirets uniquements." ;
+                        cityErrorMsg.style.color = "#fbbcbc";
+                    }
+                })
+            
+                 /*___________________  Vérification de l'email  ___________________*/
+                    
+                inputemail.addEventListener("input", function () {
+                
+                let emailErrorMsg = document.getElementById("emailErrorMsg")
+            
+                    if(inputemail.value == "" ){
+                        emailErrorMsg.innerText = "" ;
+                    }
+                    else if(myRegexEmail.test(inputemail.value) == true) {
+                        emailErrorMsg.innerText = "L'Email est correcte" ;
+                        emailErrorMsg.style.color = "#dbffe5";
+                        true
+                    }
+                    else if(myRegexEmail.test(inputemail.value) == false) {
+                        emailErrorMsg.innerText = "😕 Veuiller saisir un Email valide Exemple:  utilisateur4534@gmail.com" ;
+                        emailErrorMsg.style.color = "#fbbcbc";
+                    }
+                })
+            } else {
+                inputfirstName.style.background = "#fbbcbc";
+                inputfirstName.placeholder = "⛔️ Panier vide ⛔️";
+
+                inputlastName.style.background = "#fbbcbc";
+                inputlastName.placeholder = "⛔️ Panier vide ⛔️";
+
+                inputaddress.style.background = "#fbbcbc";
+                inputaddress.placeholder = "⛔️ Panier vide ⛔️";
+
+                inputcity.style.background = "#fbbcbc";
+                inputcity.placeholder = "⛔️ Panier vide ⛔️";
+
+                inputemail.style.background = "#fbbcbc";
+                inputemail.placeholder = "⛔️ Panier vide ⛔️";
+            }
+          })
+        }
+
+/*////////////////////////////////////////////////  Validation du formulaire avant l'envoie  ///////////////////////////////////////////////*/
+
+          async function sendProductForm() {
+                
+            /*________________  récupération des champs  ____________________*/
+                
+            let inputfirstName = document.getElementById("firstName");
+            let inputlastName = document.getElementById("lastName");
+            let inputaddress = document.getElementById("address");
+            let inputcity = document.getElementById("city");
+            let inputemail = document.getElementById("email");
+
+            /*________________  Regex pour vérifier le champs avant l'envoie  ____________________*/
+
+            let myRegex = /^[a-zA-Z-\sùéèàç_]+$/;
+            let myRegexEmail = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+            let boutonorder = document.getElementById("order")
+
+            boutonorder.addEventListener(("click"), function (e) {
+            e.preventDefault();
+
+            if (productBoard != null) {
+                
+            
+            if(myRegex.test(inputfirstName.value) &&
+            myRegex.test(inputlastName.value) &&
+            myRegex.test(inputaddress.value) &&
+             myRegex.test(inputcity.value) &&
+            myRegexEmail.test(inputemail.value) == true
+            ) {  
+
+/*__________________________________ Creation Contact et products  ___________________________________*/
+            
+
+            const order = {
+                contact: {
+                    firstName: inputfirstName.value,
+                    lastName: inputlastName.value,
+                    address: inputaddress.value,
+                    city: inputcity.value,
+                    email: inputemail.value,
+                },
+                    products: productId,
+                };
+                    console.table(order)
+            
+            const options = {
+                method: "POST",
+                body: JSON.stringify(order),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            };
+            //console.table(options)
+            
+                fetch("http://localhost:3000/api/products/order", options)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    localStorage.clear();
+                           
+                    document.location.href = `confirmation.html?id=${data.orderId}`
+                })
+            }else if(myRegex.test(inputfirstName.value) ||
+            myRegex.test(inputlastName.value) ||
+            myRegex.test(inputaddress.value) ||
+             myRegex.test(inputcity.value) ||
+            myRegexEmail.test(inputemail.value) == false){
+                alert(`Oups!😓Veuiller bien remplir le formulaire`)
+                //console.log("formulaire non valide")
+            }
+        }else{
+            alert(`Oups!😓Veuiller ajouter des articles à votre panier.`)
+        }
+        })
+    }
