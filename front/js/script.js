@@ -1,8 +1,8 @@
 async function kanapDisplay () { 
 let list_kanap = await fetchkanap ();
-console.log(list_kanap);
+//console.log(list_kanap);
 
-/*_____________________creation d'element dans le HTML_________________________*/
+/*//////////////////////  creation d'element dans le HTML  ///////////////////////*/
 
 list_kanap.forEach(kanap => {
 

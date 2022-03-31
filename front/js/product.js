@@ -11,9 +11,9 @@ const product = window.location.search.split("?").join("");
 
     async function productDisplay () { 
         let productData = await fetchProduct (product);
-        console.log(productData);
+        //console.log(productData);
 
-        /*_____________________creation d'element dans le HTML_________________________*/
+        /*_____________________  creation d'element dans le DOM  _________________________*/
 
         document.title = `${productData.name}`;
 
@@ -28,7 +28,7 @@ const product = window.location.search.split("?").join("");
         let quantity = document.getElementById("quantity");
         quantity.value = "1";
 
-        quantity.addEventListener("click", () => {
+        quantity.addEventListener("change", () => {
             let maxPrice = `${productData.price}` * quantity.value;
             document.getElementById("price").innerText = maxPrice;
         })
@@ -76,7 +76,7 @@ const product = window.location.search.split("?").join("");
 
             //console.log(selectColors.value);
             //console.log(selectQuantity.value);
-            console.log(productBoard);
+            //console.log(productBoard);
             
 
             const productparam = Object.assign({}, productData, {
@@ -85,18 +85,18 @@ const product = window.location.search.split("?").join("");
                 Product_Delete: `Delete_${productData._id}_and_${selectColors.value}`,
             });
             
-            /*_____________________validation du produit_________________________*/
+            /*_________________________  validation du produit  _________________________*/
 
-            if(selectQuantity.value > 0 && selectColors.value != 0 && selectQuantity.value <= 100){
+            if(selectQuantity.value > 0 && selectColors.value != 0 && selectQuantity.value <= 100 && selectQuantity.value > 0) {
                 console.log("produit valide")
             
-            /*_____________________creation du produit dans le localstorage_________________________*/
+            /*_____________________  creation du produit dans le localstorage  _________________________*/
 
             if(productBoard == null){
                 productBoard = []
                 productBoard.push(productparam)
                 localStorage.setItem("product", JSON.stringify(productBoard));
-                let alert = confirm(`${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
+                let alert = confirm(`${selectQuantity.value} ${productData.name} ${selectColors.value} a bien été ajouter au panier, voulez-vous consulter votre panier 🤔?`);
                 if (alert == true) {
                     window.location = "./cart.html";
                 }
@@ -105,26 +105,26 @@ const product = window.location.search.split("?").join("");
             }
 
             else{
-                    /*_____________________changement de la quantité du produit_________________________*/
+                    /*_____________________  changement de la quantité du produit  _________________________*/
                     for (i=0; i < productBoard.length; i++){
                     if(productBoard[i]._id == productData._id && productBoard[i].color == selectColors.value){
                         return (
                             productBoard[i].quantity= 0 + parseInt(selectQuantity.value, 10),
                             localStorage.setItem("product", JSON.stringify(productBoard)),
                             productBoard = JSON.parse(localStorage.getItem("product")),
-                            alert(`la quantité de ${productData.name} (${selectColors.value}) a été changer par ${selectQuantity.value} 🙂.`),
+                            alert(`la quantité de ${productData.name} (${selectColors.value}) a bien été changer par ${selectQuantity.value} 🙂.`),
                             console.log("change-quantity")
                         ) 
                     }    
                 }
-                    /*_________________________ajout nouveau produit____________________________*/
+                    /*____________________________  ajout nouveau produit  ____________________________*/
                     for (i=0; i < productBoard.length; i++){
                     if(productBoard[i]._id == productData._id && productBoard[i].color != selectColors.value || productBoard[i]._id != productData._id){
                         return (
                         productBoard.push(productparam),
                         localStorage.setItem("product", JSON.stringify(productBoard)),
                         productBoard = JSON.parse(localStorage.getItem("product")),
-                        alert(`${selectQuantity.value} ${productData.name} ${selectColors.value} a été ajouter au panier 🙂.`),
+                        alert(`${selectQuantity.value} ${productData.name} ${selectColors.value} a bien été ajouter au panier 🙂.`),
                         console.log("new-article")
                         )
                     }
@@ -132,7 +132,7 @@ const product = window.location.search.split("?").join("");
             }
         }
 
-/*_________________________________echec de la validation du produit___________________________________*/
+/*//////////////////////////////////////////  echec de la validation du produit  ////////////////////////////////////////*/
 
         else {
             console.log("produit non valide")
