@@ -3,16 +3,15 @@
 let productBoard = JSON.parse(localStorage.getItem("product"));
 //console.log(productBoard)
 
-panierDisplay();
-form();
-sendProductForm()
 
-/*///////////////////////////////  creation d'élément dans le HTML si le panier contient des éléments  ///////////////////////////////*/
 let productId = []
 //console.log(productId)
 
+let deleteproduct = []
+//console.log(deleteproduct)
 
-            
+/*///////////////////////////////  creation d'élément dans le HTML si le panier contient des éléments  ///////////////////////////////*/
+
 async function panierDisplay() {
 
     
@@ -22,22 +21,15 @@ async function panierDisplay() {
        //console.table(products);
 
        products.forEach((product) => {
-            //console.table(product._id);
+        //console.table(product._id);
 
 /*///////////////////////////////////////  appel de l'API pour la creation d'element dans le HTML  //////////////////////////////////////////*/
-
-            fetch(`http://localhost:3000/api/products/${product._id}`)
-            .then(response => response.json())
-            .then(data => {
-            //console.log(data);
-            
 
             productId.push(product._id)
 
             const cartItems = document.getElementById("cart__items");
 
             const article = document.createElement("article");
-            article.id = `Article_${product._id}_and_${product.color}`;
             article.className = "cart__item";
             article.dataset.id = `${product._id}`;
             article.dataset.color = `${product.color}`;
@@ -46,6 +38,11 @@ async function panierDisplay() {
             const cartItemImg = document.createElement("div");
             cartItemImg.className = "cart__item__img";
             article.appendChild(cartItemImg);
+
+            fetch(`http://localhost:3000/api/products/${product._id}`)
+            .then(response => response.json())
+            .then(data => {
+            //console.log(data);
 
             const img = new Image ;
                 img.className = "imgKanap"
@@ -85,8 +82,8 @@ async function panierDisplay() {
             quantityArticle.innerText = "Quantité :";
             cartItemContentSettingsQuantity.appendChild(quantityArticle);
             
-            let kanapQuantity = document.createElement("input");
-            kanapQuantity.id = `Quantity_${product._id}_and_${product.color}`;
+            const kanapQuantity = document.createElement("input");
+            kanapQuantity.id = `Quantity_${product._id}_and_${product.color}`
             kanapQuantity.type = "number";
             kanapQuantity.className = "itemQuantity";
             kanapQuantity.name = "itemQuantity";
@@ -102,45 +99,46 @@ async function panierDisplay() {
             const deletekanap = document.createElement("p");
             deletekanap.className = "deleteItem";
             deletekanap.innerText = "Supprimer";
+            deletekanap.dataset.id = `${product._id}`;
+            deletekanap.dataset.color = `${product.color}`;
             deletekanap.id = `Delete_${product._id}_and_${product.color}`;
             cartItemContentSettingsDelete.appendChild(deletekanap);          
                 
 /*///////////////////////////////////////////  calcul du prix total des produits  //////////////////////////////////////////////////*/
+ 
+function caculTotalPrice() {
 
-             
-            function caculTotalPrice() {
+    let inputQuantity = document.getElementById(`Quantity_${product._id}_and_${product.color}`);
 
-                let inputQuantity = document.getElementById(`Quantity_${product._id}_and_${product.color}`);
+    let maxPrice = `${data.price}` * `${inputQuantity.value}`;
+    price.innerText = `${maxPrice} €`;
 
-                let maxPrice = `${data.price}` * `${inputQuantity.value}`;
-                price.innerText = `${maxPrice} €`;
-            
-                let arr = document.querySelectorAll(".price");
-                                    
-                let total = 0;
-                for (let i = 0; i < arr.length; i++) {
-                if (parseInt(arr[i].innerHTML)) {
-                total += parseInt(arr[i].innerHTML);
-                                                  
-                }}
-                let totalQuantity = document.getElementById("totalPrice");
-                totalQuantity.innerText = total;
-                //console.log(total)
+    let arr = document.querySelectorAll(".price");
+                        
+    let total = 0;
+    for (let i = 0; i < arr.length; i++) {
+    if (parseInt(arr[i].innerHTML)) {
+    total += parseInt(arr[i].innerHTML);
+                                      
+    }}
+    let totalQuantity = document.getElementById("totalPrice");
+    totalQuantity.innerText = total;
+    //console.log(total)
 
-               }
-            
-               let boutonsQuantityp = document.querySelectorAll(".itemQuantity");
-                
-                boutonsQuantityp.forEach((boutonQuantityp) => {boutonQuantityp.addEventListener("change", function () {
-                caculTotalPrice()
-            })})
-                caculTotalPrice()
+   }
+
+   let boutonsQuantityp = document.querySelectorAll(".itemQuantity");
+    
+    boutonsQuantityp.forEach((boutonQuantityp) => {boutonQuantityp.addEventListener("change", function () {
+    caculTotalPrice()
+})})
+    caculTotalPrice()
 
 /*//////////////////////////////////////  changement de la quantité dans localstorage  ////////////////////////////////////////*/ 
 
-            let boutonsQuantity = document.getElementById(`Quantity_${product._id}_and_${product.color}`);
-                
-            boutonsQuantity.addEventListener("change", function () {
+let boutonsQuantity = document.querySelectorAll(".itemQuantity");
+    
+    boutonsQuantity.forEach((boutonQuantity) => {boutonQuantity.addEventListener("change", function () {
             
             for (i=0; i <productBoard.length; i++){  //productBoard = localstorage
             
@@ -159,7 +157,7 @@ async function panierDisplay() {
                 console.log("Quantity non valide")
             }
         }
-            })
+            })})
 
 /*////////////////////////////////////////  calcul de la quatité total des produits  ///////////////////////////////////////////*/
 
@@ -181,17 +179,16 @@ async function panierDisplay() {
 
             boutonsQuantityTotal.forEach((boutonQuantityTotal) => {boutonQuantityTotal.addEventListener("change", function () {
                calculQuantityTotale()
-            })
-        })
+            })})
                calculQuantityTotale()
 
 
 /*/////////////////////////////////////  suppression de produit dans localstorage  //////////////////////////////////////////*/
 
-            let boutonsDelete = document.getElementById(`Delete_${product._id}_and_${product.color}`);
+            let boutonsDelete = document.querySelectorAll(".deleteItem");
             //console.log(boutonsDelete);
 
-            boutonsDelete.addEventListener("click", function () {
+            boutonsDelete.forEach((boutonDelete) => {boutonDelete.addEventListener("click", function () {
             
             let totalproductBoard = productBoard.length;  //productBoard = localstorage
             //console.log(totalproductBoard);
@@ -200,12 +197,19 @@ async function panierDisplay() {
                 localStorage.removeItem("product")
                 location.reload()
             }
-            else{
-
-                productBoard = productBoard.filter(el => el.Product_Delete !== product.Product_Delete);
-                localStorage.setItem("product", JSON.stringify(productBoard));
+            else {
+                deleteproduct = productBoard.filter((el) => {
+                    if (
+                        boutonDelete.dataset.id != el._id ||
+                        boutonDelete.dataset.color != el.color
+                    ) {
+                        return true;
+                    }
+                })
                 location.reload()
-            }})
+                localStorage.setItem("product", JSON.stringify(deleteproduct));
+                console.log(deleteproduct)
+            }})})
             })})
         }
      
@@ -236,6 +240,10 @@ async function panierDisplay() {
             defaulttotalQuantity.innerText = "0";
     }
 }
+
+panierDisplay();
+form();
+sendProductForm();
 
 /*//////////////////////////////////////////  Vérification du formulaire  /////////////////////////////////////////////////////*/
 

@@ -82,7 +82,6 @@ const product = window.location.search.split("?").join("");
             const productparam = Object.assign({}, productData, {
                 color: `${selectColors.value}`,
                 quantity: `${selectQuantity.value}`,
-                Product_Delete: `Delete_${productData._id}_and_${selectColors.value}`,
             });
             
             /*_________________________  validation du produit  _________________________*/
