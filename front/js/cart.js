@@ -8,7 +8,7 @@ const productTotalQuantity = document.getElementById("totalQuantity");
 
 //Création des expressions régulières
 let myRegex = new RegExp(/^[a-zA-Z-\sùéèàç_]+$/);
-let myRegexEmail = new RegExp(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+let myRegexEmail = new RegExp(/^([a-z0-9]+(?:[._-][a-z0-9]+)*)@([a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,})$/i);
 //récupération des champs
 
 let inputfirstName = document.getElementById("firstName");
@@ -111,7 +111,7 @@ for (let product of productBoard){
 
     const price = document.createElement("p");
     price.className = "price";
-    price.innerText = apiProductPrice
+    price.innerText = apiProductPrice + "€";
     cartItemContentDescription.appendChild(price);
 
     const cartItemContentSettings = document.createElement("div");
